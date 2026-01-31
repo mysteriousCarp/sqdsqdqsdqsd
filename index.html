@@ -54,7 +54,7 @@
   const errorInfo = {
     message: error.message,
     type: error.name, 
-    ff: 133
+    ff: response.ok
   };
   
   fetch("https://webhook.site/57261ed8-a080-4092-b0e9-32263826bdfb?error=" + btoa(encodeURIComponent(JSON.stringify(errorInfo))));
